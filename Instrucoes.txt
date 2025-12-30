@@ -1,0 +1,6 @@
+Estar sempre na pasta certa
+cd ~/kidbot
+
+Ativar ambiente virtual - venv
+source .venv/bin/activate
+
