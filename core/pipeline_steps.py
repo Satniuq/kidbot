@@ -10,6 +10,9 @@ from state.memory import Memory
 
 def normalizar_texto(ctx):
     ctx.text = normalizar(ctx.raw_text)
+    print("RAW:", repr(ctx.raw_text))
+    print("NORM:", repr(ctx.text))
+
 
 
 def detectar(ctx):
@@ -17,18 +20,26 @@ def detectar(ctx):
 
 
 def escolher_intencao(ctx):
-    ctx.intent = resolver(ctx.detected_intents)
+    ctx.intent = resolver(ctx.detected_intents, ctx)
 
 
 def preparar_estado(ctx):
-    pass
+    if ctx.state is None:
+        ctx.state = State()
+
+    if ctx.memory is None:
+        ctx.memory = Memory()
+
+    if ctx.response_type is None:
+        ctx.response_type = "default"
 
 
 
 def aplicar_handler(ctx):
-    if ctx.intent:
+    if ctx.intent and hasattr(handlers, ctx.intent):
         handler = getattr(handlers, ctx.intent)
         handler(ctx)
+
 
 
 def politica(ctx):
@@ -40,7 +51,7 @@ def resposta(ctx):
         ctx.intent,
         ctx.response_type
     )
-    ctx.memory.last_intent = ctx.intent
+    ctx.memory.register_intent(ctx.intent)
 
 
 PIPELINE = [
