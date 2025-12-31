@@ -15,6 +15,10 @@ class Memory:
         # história actualmente em curso (ex: "robot", "dragao")
         self.current_story = None
 
+        # escolha narrativa pendente
+        self.pending_choice = None
+
+
     def register_intent(self, intent):
         if intent is None:
             return
