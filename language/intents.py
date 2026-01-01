@@ -34,6 +34,29 @@ INTENTS = {
         ]
     },
 
+    # ── ESCOLHAS NARRATIVAS ────────────────────
+    "voar": {
+        "priority": 10,
+        "patterns": [
+            "voar",
+            "tentar voar",
+            "voa",
+            "voe"
+        ]
+    },
+
+    "esperar": {
+        "priority": 10,
+        "patterns": [
+            "esperar",
+            "espera",
+            "aguardar",
+            "esperar ajuda",
+            "ajuda"
+        ]
+    },
+
+
     # ── IDENTIDADE / SOCIAL ────────────────────
     "identidade": {
         "priority": 3,

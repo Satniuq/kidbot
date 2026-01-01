@@ -21,17 +21,33 @@ RESPONSES = {
             "inicio": [
                 "Era uma vez um pequeno dragão que tinha medo de voar."
             ],
+
+            # 🔹 aqui introduzimos a escolha
             "meio": [
-                "Todos os dias treinava as asas, mesmo com medo."
+                "Todos os dias treinava as asas, mesmo com medo. "
+                "Queres que tente voar ou espere ajuda?"
             ],
+
+            # 🔹 respostas à escolha
+            "dragao_voar": [
+                "O dragão respirou fundo e bateu as asas com força, mesmo com medo."
+            ],
+
+            "dragao_esperar": [
+                "O dragão decidiu esperar e pedir ajuda aos amigos antes de tentar voar."
+            ],
+
+            # 🔹 continuação normal da história
             "climax": [
                 "Um dia, teve de voar para ajudar um amigo."
             ],
+
             "fim": [
                 "E assim, o dragão aprendeu a confiar em si."
             ]
         }
     },
+
 
 
     "continuar": {

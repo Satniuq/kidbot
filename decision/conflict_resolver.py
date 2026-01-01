@@ -3,6 +3,12 @@
 from language.intents import INTENTS
 
 def resolver(intents, ctx=None):
+    # 🟢 prioridade máxima: escolha pendente
+    if ctx and ctx.memory.pending_choice:
+        for opt in ctx.memory.pending_choice["options"]:
+            if opt in intents:
+                return opt
+
     if not intents:
         return None
 
@@ -14,4 +20,3 @@ def resolver(intents, ctx=None):
         intents,
         key=lambda i: INTENTS[i]["priority"]
     )
-

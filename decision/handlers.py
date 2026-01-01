@@ -27,6 +27,13 @@ def historia(ctx):
     elif step == 1:
         ctx.response_type = "meio"
 
+        # criar escolha narrativa (apenas uma vez)
+        if ctx.memory.current_story == "dragao" and ctx.memory.pending_choice is None:
+            ctx.memory.pending_choice = {
+                "type": "dragao_voar",
+                "options": ["voar", "esperar"]
+            }
+
     elif step == 2:
         ctx.response_type = "climax"
 
@@ -40,6 +47,30 @@ def historia(ctx):
 
     ctx.memory.story_step += 1
 
+#escolhas narrativas
+
+def voar(ctx):
+    if ctx.memory.pending_choice:
+        ctx.memory.pending_choice = None
+
+        # 🔑 DOMÍNIO CORRECTO
+        ctx.intent_executed = "historia"
+        ctx.response_type = "dragao_voar"
+        ctx.memory.story_step += 1
+    else:
+        ctx.response_type = "confuso"
+
+
+def esperar(ctx):
+    if ctx.memory.pending_choice:
+        ctx.memory.pending_choice = None
+
+        # 🔑 DOMÍNIO CORRECTO
+        ctx.intent_executed = "historia"
+        ctx.response_type = "dragao_esperar"
+        ctx.memory.story_step += 1
+    else:
+        ctx.response_type = "confuso"
 
 
 
