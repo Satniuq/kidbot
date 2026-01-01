@@ -1,3 +1,5 @@
+#intents.py
+
 INTENTS = {
 
     # ── NARRATIVA ─────────────────────────────

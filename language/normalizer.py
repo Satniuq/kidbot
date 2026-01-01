@@ -1,3 +1,5 @@
+#normalizer.py
+
 import unicodedata
 
 def normalizar(texto: str) -> str:

@@ -1,3 +1,5 @@
+#memory.py
+
 class Memory:
     def __init__(self):
         # última intenção detectada (compatível com código existente)
@@ -17,6 +19,9 @@ class Memory:
 
         # escolha narrativa pendente
         self.pending_choice = None
+
+        #contador narrativo
+        self.story_step = 0
 
 
     def register_intent(self, intent):

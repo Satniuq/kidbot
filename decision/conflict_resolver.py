@@ -1,3 +1,5 @@
+#conflict_resolver.py
+
 from language.intents import INTENTS
 
 def resolver(intents, ctx=None):

@@ -1,34 +1,46 @@
+#handlers.py
+
 import random
 
+def escolher_historia(memory):
+    historias = ["robot", "dragao"]
+
+    # evitar repetir a mesma história seguida
+    if memory.current_story in historias and len(historias) > 1:
+        historias = [h for h in historias if h != memory.current_story]
+
+    return random.choice(historias)
+
+
 def historia(ctx):
-    # se não estamos numa história, começa uma nova
     if ctx.memory.mode != "story":
-        ctx.memory.intent_counts["historia"] = 0
         ctx.memory.mode = "story"
+        ctx.memory.current_story = escolher_historia(ctx.memory)
+        ctx.memory.story_step = 0
 
-        # escolher a história (enredo)
-        ctx.memory.current_story = random.choice(["robot", "dragao"])
-
-    count = ctx.memory.intent_counts.get("historia", 0)
-
+    step = ctx.memory.story_step
     ctx.state.emocao = "feliz"
 
-    if count == 0:
+    if step == 0:
         ctx.response_type = "inicio"
 
-    elif count == 1:
+    elif step == 1:
         ctx.response_type = "meio"
 
-    elif count == 2:
+    elif step == 2:
         ctx.response_type = "climax"
 
-    elif count == 3:
+    elif step == 3:
         ctx.response_type = "fim"
-        ctx.memory.mode = None
-        ctx.memory.current_story = None
 
-    else:
-        ctx.response_type = "fim"
+        # ⚠️ NÃO limpar current_story aqui
+        ctx.memory.mode = None
+        ctx.memory.story_step = 0
+        return
+
+    ctx.memory.story_step += 1
+
+
 
 
 def continuar(ctx):

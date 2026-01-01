@@ -1,17 +1,27 @@
+#context.py
+
+from state.state import State
+from state.memory import Memory
+
 class Context:
     def __init__(self, texto):
         # INPUT
         self.raw_text = texto
-        self.text = None  # texto normalizado
+        self.text = None
 
         # INTENÇÕES
         self.detected_intents = []
-        self.intent = None
+        self.intent_detected = None
+        self.intent_executed = None
 
-        # ESTADO INTERNO
-        self.state = None
-        self.memory = None
+        # ESTADO E MEMÓRIA (NUNCA None)
+        self.state = State()
+        self.memory = Memory()
 
         # RESPOSTA
-        self.response_type = None
+        self.response_type = "default"
         self.response_text = None
+
+        # DEBUG / TRACE
+        self.trace = []
+

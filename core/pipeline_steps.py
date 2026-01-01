@@ -1,3 +1,5 @@
+#pipeline_steps.py
+
 from language.normalizer import normalizar
 from language.intent_matcher import detectar_intencoes
 from decision.conflict_resolver import resolver
@@ -20,7 +22,8 @@ def detectar(ctx):
 
 
 def escolher_intencao(ctx):
-    ctx.intent = resolver(ctx.detected_intents, ctx)
+    ctx.intent_detected = resolver(ctx.detected_intents, ctx)
+    ctx.intent_executed = ctx.intent_detected
 
 
 def preparar_estado(ctx):
@@ -36,9 +39,10 @@ def preparar_estado(ctx):
 
 
 def aplicar_handler(ctx):
-    if ctx.intent and hasattr(handlers, ctx.intent):
-        handler = getattr(handlers, ctx.intent)
+    if ctx.intent_executed and hasattr(handlers, ctx.intent_executed):
+        handler = getattr(handlers, ctx.intent_executed)
         handler(ctx)
+
 
 
 
@@ -48,10 +52,12 @@ def politica(ctx):
 
 def resposta(ctx):
     ctx.response_text = escolher_resposta(
-        ctx.intent,
-        ctx.response_type
+        ctx.intent_executed,
+        ctx.response_type,
+        ctx.memory
     )
-    ctx.memory.register_intent(ctx.intent)
+    ctx.memory.register_intent(ctx.intent_executed)
+
 
 
 PIPELINE = [
