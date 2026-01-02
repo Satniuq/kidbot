@@ -13,8 +13,10 @@ RESPONSES = {
                 "No meio da aventura, percebeu que errar fazia parte de aprender."
             ],
             "fim": [
-                "No fim, o robot voltou feliz, sabendo que a curiosidade nunca acaba."
+                "No fim, o robot voltou feliz, sabendo que a curiosidade nunca acaba. "
+                "Queres que eu conte outra história?"
             ]
+
         },
 
         "dragao": {
@@ -43,9 +45,18 @@ RESPONSES = {
             ],
 
             "fim": [
-                "E assim, o dragão aprendeu a confiar em si."
+                "E assim, o dragão aprendeu a confiar em si. "
+                "Queres que eu conte outra história?"
             ]
-        }
+        },
+        # ── ESCOLHA SIM / NÃO NO FIM DA HISTÓRIA ──
+        "nova_historia": [
+            "Então vamos começar outra história! 😊"
+        ],
+
+        "fim_definitivo": [
+            "Está bem. Quando quiseres, é só dizeres 😊"
+        ]
     },
 
 

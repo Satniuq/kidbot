@@ -2,10 +2,79 @@
 
 import random
 
+# ─────────────────────────────────────────
+# MOTOR GENÉRICO DE ESCOLHAS
+# ─────────────────────────────────────────
+
+def escolha(ctx):
+    choice = ctx.memory.pending_choice
+    if not choice:
+        ctx.response_type = "confuso"
+        return
+
+    intent = ctx.intent_executed
+    if intent not in choice["options"]:
+        ctx.response_type = "confuso"
+        return
+
+    ctx.memory.pending_choice = None
+    ctx.intent_executed = choice["domain"]
+    ctx.response_type = choice["options"][intent]
+
+
+    # 🔑 CASO ESPECIAL: nova história
+    if ctx.response_type == "nova_historia":
+        ctx.memory.mode = "story"
+        ctx.memory.current_story = None
+        ctx.memory.story_step = 0
+
+        # falar a frase "Então vamos começar outra história!"
+        # e IMEDIATAMENTE iniciar a história
+        historia(ctx)
+        return
+
+    # caso normal
+    ctx.memory.story_step = choice["next_step"]
+
+
+
+
+# ─────────────────────────────────────────
+# WRAPPERS DE OPÇÕES (SEM LÓGICA)
+# ─────────────────────────────────────────
+def sim(ctx):
+    # 1️⃣ se há escolha pendente → resolver escolha
+    if ctx.memory.pending_choice:
+        escolha(ctx)
+        return
+
+    # 2️⃣ se não há escolha, "sim" equivale a pedir história
+    ctx.intent_executed = "historia"
+    ctx.memory.mode = "story"
+    ctx.memory.story_step = 0
+    ctx.memory.current_story = None
+    historia(ctx)
+
+
+
+def nao(ctx):
+    escolha(ctx)
+
+
+def voar(ctx):
+    escolha(ctx)
+
+def esperar(ctx):
+    escolha(ctx)
+
+
+# ─────────────────────────────────────────
+# NARRATIVA
+# ─────────────────────────────────────────
+
 def escolher_historia(memory):
     historias = ["robot", "dragao"]
 
-    # evitar repetir a mesma história seguida
     if memory.current_story in historias and len(historias) > 1:
         historias = [h for h in historias if h != memory.current_story]
 
@@ -27,11 +96,15 @@ def historia(ctx):
     elif step == 1:
         ctx.response_type = "meio"
 
-        # criar escolha narrativa (apenas uma vez)
+        # 🔑 CRIA ESCOLHA APENAS COM DADOS
         if ctx.memory.current_story == "dragao" and ctx.memory.pending_choice is None:
             ctx.memory.pending_choice = {
-                "type": "dragao_voar",
-                "options": ["voar", "esperar"]
+                "domain": "historia",
+                "next_step": 2,
+                "options": {
+                    "voar": "dragao_voar",
+                    "esperar": "dragao_esperar"
+                }
             }
 
     elif step == 2:
@@ -40,47 +113,35 @@ def historia(ctx):
     elif step == 3:
         ctx.response_type = "fim"
 
-        # ⚠️ NÃO limpar current_story aqui
+        # 🔑 criar escolha SIM / NÃO
+        ctx.memory.pending_choice = {
+            "domain": "historia",
+            "next_step": 0,
+            "options": {
+                "sim": "nova_historia",
+                "nao": "fim_definitivo"
+            }
+        }
+
         ctx.memory.mode = None
         ctx.memory.story_step = 0
         return
 
     ctx.memory.story_step += 1
 
-#escolhas narrativas
-
-def voar(ctx):
-    if ctx.memory.pending_choice:
-        ctx.memory.pending_choice = None
-
-        # 🔑 DOMÍNIO CORRECTO
-        ctx.intent_executed = "historia"
-        ctx.response_type = "dragao_voar"
-        ctx.memory.story_step += 1
-    else:
-        ctx.response_type = "confuso"
 
 
-def esperar(ctx):
-    if ctx.memory.pending_choice:
-        ctx.memory.pending_choice = None
-
-        # 🔑 DOMÍNIO CORRECTO
-        ctx.intent_executed = "historia"
-        ctx.response_type = "dragao_esperar"
-        ctx.memory.story_step += 1
-    else:
-        ctx.response_type = "confuso"
-
-
+# ─────────────────────────────────────────
+# OUTROS HANDLERS
+# ─────────────────────────────────────────
 
 def continuar(ctx):
     if ctx.memory.mode == "story":
-        # reutiliza a progressão da história
-        ctx.intent = "historia"
+        ctx.intent_executed = "historia"
         historia(ctx)
     else:
         ctx.response_type = "confuso"
+
 
 def parar(ctx):
     if ctx.memory.mode == "story":
@@ -103,15 +164,14 @@ def saudacao(ctx):
     ctx.state.emocao = "feliz"
     ctx.response_type = "curta"
 
+
 def ajuda(ctx):
     ctx.response_type = "explicacao"
 
 
 def confirmacao(ctx):
-    # confirmação depende do modo actual
     if ctx.memory.mode == "story":
-        # confirmar = continuar história
-        ctx.intent = "historia"
+        ctx.intent_executed = "historia"
         historia(ctx)
     else:
         ctx.response_type = "confirmado"
@@ -123,4 +183,3 @@ def negacao(ctx):
         ctx.response_type = "recusou"
     else:
         ctx.response_type = "negou"
-

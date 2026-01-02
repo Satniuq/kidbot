@@ -19,7 +19,8 @@ INTENTS = {
             "continua",
             "mais",
             "e depois",
-            "e a seguir"
+            "e a seguir",
+            "depois"
         ]
     },
 
@@ -53,6 +54,30 @@ INTENTS = {
             "aguardar",
             "esperar ajuda",
             "ajuda"
+        ]
+    },
+
+    # ── ESCOLHAS GERAIS ────────────────────────
+    "sim": {
+        "priority": 10,
+        "patterns": [
+            "sim",
+            "claro",
+            "ok",
+            "está bem",
+            "esta bem",
+            "quero"
+        ]
+    },
+
+    "nao": {
+        "priority": 10,
+        "patterns": [
+            "nao",
+            "não",
+            "nem pensar",
+            "agora nao",
+            "agora não"
         ]
     },
 
