@@ -15,8 +15,15 @@ RESPONSES = {
             "fim": [
                 "No fim, o robot voltou feliz, sabendo que a curiosidade nunca acaba. "
                 "Queres que eu conte outra história?"
-            ]
+            ],
 
+            # 🔑 resposta ao SIM / NÃO
+            "nova_historia": [
+                "Então vamos começar outra história! 😊 Diz 'história' quando quiseres."
+            ],
+            "fim_definitivo": [
+                "Está bem. Quando quiseres, é só dizeres 😊"
+            ]
         },
 
         "dragao": {
@@ -24,22 +31,18 @@ RESPONSES = {
                 "Era uma vez um pequeno dragão que tinha medo de voar."
             ],
 
-            # 🔹 aqui introduzimos a escolha
             "meio": [
                 "Todos os dias treinava as asas, mesmo com medo. "
                 "Queres que tente voar ou espere ajuda?"
             ],
 
-            # 🔹 respostas à escolha
             "dragao_voar": [
                 "O dragão respirou fundo e bateu as asas com força, mesmo com medo."
             ],
-
             "dragao_esperar": [
                 "O dragão decidiu esperar e pedir ajuda aos amigos antes de tentar voar."
             ],
 
-            # 🔹 continuação normal da história
             "climax": [
                 "Um dia, teve de voar para ajudar um amigo."
             ],
@@ -47,19 +50,17 @@ RESPONSES = {
             "fim": [
                 "E assim, o dragão aprendeu a confiar em si. "
                 "Queres que eu conte outra história?"
+            ],
+
+            # 🔑 resposta ao SIM / NÃO
+            "nova_historia": [
+                "Então vamos começar outra história! 😊 Diz 'história' quando quiseres."
+            ],
+            "fim_definitivo": [
+                "Está bem. Quando quiseres, é só dizeres 😊"
             ]
-        },
-        # ── ESCOLHA SIM / NÃO NO FIM DA HISTÓRIA ──
-        "nova_historia": [
-            "Então vamos começar outra história! 😊"
-        ],
-
-        "fim_definitivo": [
-            "Está bem. Quando quiseres, é só dizeres 😊"
-        ]
+        }
     },
-
-
 
     "continuar": {
         "confuso": [

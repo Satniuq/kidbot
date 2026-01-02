@@ -21,40 +21,17 @@ def escolha(ctx):
     ctx.intent_executed = choice["domain"]
     ctx.response_type = choice["options"][intent]
 
-
-    # 🔑 CASO ESPECIAL: nova história
-    if ctx.response_type == "nova_historia":
-        ctx.memory.mode = "story"
-        ctx.memory.current_story = None
-        ctx.memory.story_step = 0
-
-        # falar a frase "Então vamos começar outra história!"
-        # e IMEDIATAMENTE iniciar a história
-        historia(ctx)
-        return
-
-    # caso normal
+    # avançar passo APENAS
     ctx.memory.story_step = choice["next_step"]
-
-
-
 
 # ─────────────────────────────────────────
 # WRAPPERS DE OPÇÕES (SEM LÓGICA)
 # ─────────────────────────────────────────
 def sim(ctx):
-    # 1️⃣ se há escolha pendente → resolver escolha
     if ctx.memory.pending_choice:
         escolha(ctx)
-        return
-
-    # 2️⃣ se não há escolha, "sim" equivale a pedir história
-    ctx.intent_executed = "historia"
-    ctx.memory.mode = "story"
-    ctx.memory.story_step = 0
-    ctx.memory.current_story = None
-    historia(ctx)
-
+    else:
+        ctx.response_type = "confirmado"
 
 
 def nao(ctx):
@@ -123,8 +100,6 @@ def historia(ctx):
             }
         }
 
-        ctx.memory.mode = None
-        ctx.memory.story_step = 0
         return
 
     ctx.memory.story_step += 1

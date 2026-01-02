@@ -4,3 +4,5 @@ cd ~/kidbot
 Ativar ambiente virtual - venv
 source .venv/bin/activate
 
+Testar:
+    python -m tests.test_brain
