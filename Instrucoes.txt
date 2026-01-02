@@ -6,3 +6,10 @@ source .venv/bin/activate
 
 Testar:
     python -m tests.test_brain
+
+
+GitHub
+
+git add .
+git commit -m "bug sim/nao a escolher historia resolvido"
+git push
