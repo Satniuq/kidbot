@@ -11,5 +11,5 @@ Testar:
 GitHub
 
 git add .
-git commit -m "bug sim/nao a escolher historia resolvido"
+git commit -m "intruçoes atualizadas"
 git push
