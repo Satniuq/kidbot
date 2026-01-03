@@ -1,6 +1,57 @@
 #responses.py
 
 RESPONSES = {
+
+    # ─────────────────────────────────────────
+    # FALLBACK
+    # ─────────────────────────────────────────
+    "fallback": {
+        "orientar": [
+            "Não percebi bem 😊 Queres que eu conte uma história?",
+            "Não entendi 😄 Queres ouvir uma história ou falar comigo?",
+            "Hmm… não percebi. Podemos continuar a história ou começar outra 😊"
+        ]
+    },
+
+
+    # ─────────────────────────────────────────
+    # SAUDAÇÃO
+    # ─────────────────────────────────────────
+
+    "saudacao": {
+        "oferta": [
+            "Olá! 😊 Queres que eu conte uma história ou preferes conversar?"
+        ],
+        "oferecer_historia": [
+            "Boa escolha! 😊 Diz 'história' quando quiseres."
+        ],
+        "oferecer_ajuda": [
+            "Claro! Posso contar histórias ou conversar contigo. O que gostavas de fazer?"
+        ]
+    },
+
+
+    # ─────────────────────────────────────────
+    # AJUDA
+    # ─────────────────────────────────────────
+
+    "ajuda": {
+        "explicacao": [
+            "Posso contar histórias, conversar contigo ou falar sobre mim. 😊 O que gostavas de fazer?"
+        ],
+        "oferecer_historia": [
+            "Óptimo! 😊 Diz 'história' quando quiseres."
+        ],
+        "oferecer_conversa": [
+            "Claro 😊 Podes dizer 'olá', perguntar quem sou ou pedir ajuda."
+        ]
+    },
+
+
+    # ─────────────────────────────────────────
+    # HISTÓRIA - NARRATIVA
+    # ─────────────────────────────────────────
+
     "historia": {
         "robot": {
             "inicio": [
@@ -62,6 +113,7 @@ RESPONSES = {
         }
     },
 
+
     "continuar": {
         "confuso": [
             "Continuar o quê? 😄",
@@ -80,49 +132,30 @@ RESPONSES = {
         ]
     },
 
-
+    # ─────────────────────────────────────────
+    # IDENTIDADE
+    # ─────────────────────────────────────────
 
     "identidade": {
         "normal": [
-            "Eu sou o KidBot."
+            "Sou o KidBot 😊 Gosto de contar histórias e conversar contigo. Queres saber o que posso fazer?"
         ],
         "curta": [
-            "Eu já te disse quem sou 😊"
-        ]
-    },
-
-    "saudacao": {
-        "curta": [
-            "Olá!"
-        ]
-    },
-
-    "ajuda": {
-        "explicacao": [
-            "Posso contar histórias, falar sobre mim e responder às tuas perguntas.",
-            "Consigo contar histórias, conversar contigo e aprender contigo.",
-            "Posso contar histórias e falar contigo sempre que quiseres."
-        ]
-    },
-
-    "confirmacao": {
-        "confirmado": [
-            "Está bem 😊",
-            "Ok!",
-            "Combinado!",
-            "Queres que eu conte outra história?",
-            "Posso contar-te outra história se quiseres 😊"
-        ]
-    },
-
-    "negacao": {
-        "recusou": [
-            "Está bem, paramos por aqui.",
-            "Ok, não continuamos então."
+            "Sou o KidBot 😊"
         ],
-        "negou": [
-            "Está bem.",
-            "Tudo bem 😊"
+        "oferecer_ajuda": [
+            "Posso contar histórias ou conversar contigo 😊"
+        ],
+        "oferecer_historia": [
+            "Claro! 😊 Diz 'história' quando quiseres."
         ]
-    }
+    },
+
+    "despedida": {
+        "despedida": [
+            "Adeus! 😊 Quando quiseres, volto a falar contigo.",
+            "Até logo! 👋",
+            "Tchau! 😄"
+        ]
+    },
 }

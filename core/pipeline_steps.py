@@ -22,8 +22,14 @@ def detectar(ctx):
 
 
 def escolher_intencao(ctx):
-    ctx.intent_detected = resolver(ctx.detected_intents, ctx)
-    ctx.intent_executed = ctx.intent_detected
+    intent = resolver(ctx.detected_intents, ctx)
+    ctx.intent_detected = intent
+
+    if intent is None:
+        ctx.intent_executed = "fallback"
+    else:
+        ctx.intent_executed = intent
+
 
 
 def preparar_estado(ctx):

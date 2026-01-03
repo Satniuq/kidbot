@@ -3,6 +3,15 @@
 import random
 
 # ─────────────────────────────────────────
+# FALLBACK
+# ─────────────────────────────────────────
+
+def fallback(ctx):
+    ctx.state.emocao = "confuso"
+    ctx.response_type = "orientar"
+
+
+# ─────────────────────────────────────────
 # MOTOR GENÉRICO DE ESCOLHAS
 # ─────────────────────────────────────────
 
@@ -17,12 +26,19 @@ def escolha(ctx):
         ctx.response_type = "confuso"
         return
 
+    # fecha a escolha
     ctx.memory.pending_choice = None
-    ctx.intent_executed = choice["domain"]
+
+    # ⚠️ GARANTE que o picker vai procurar em RESPONSES["historia"]
+    ctx.intent_executed = choice["domain"]   # aqui SIM, e conscientemente
+
+    # define a resposta concreta (ex: dragao_voar)
     ctx.response_type = choice["options"][intent]
 
-    # avançar passo APENAS
-    ctx.memory.story_step = choice["next_step"]
+    # só avança narrativa se fizer sentido
+    if "next_step" in choice:
+        ctx.memory.story_step = choice["next_step"]
+
 
 # ─────────────────────────────────────────
 # WRAPPERS DE OPÇÕES (SEM LÓGICA)
@@ -46,6 +62,48 @@ def esperar(ctx):
 
 
 # ─────────────────────────────────────────
+# SAUDAÇÃO
+# ─────────────────────────────────────────
+
+def saudacao(ctx):
+    ctx.state.emocao = "feliz"
+
+    # resposta inicial
+    ctx.response_type = "oferta"
+
+    # cria mini-ciclo de diálogo
+    ctx.memory.pending_choice = {
+        "domain": "saudacao",
+        "options": {
+            "historia": "oferecer_historia",
+            "ajuda": "oferecer_ajuda"
+        }
+    }
+
+
+# ─────────────────────────────────────────
+# AJUDA
+# ─────────────────────────────────────────
+def ajuda(ctx):
+    # interrompe qualquer narrativa activa
+    if ctx.memory.mode == "story":
+        ctx.memory.mode = None
+        ctx.memory.story_step = 0
+        ctx.memory.pending_choice = None
+
+    ctx.state.emocao = "neutro"
+    ctx.response_type = "explicacao"
+
+    ctx.memory.pending_choice = {
+        "domain": "ajuda",
+        "options": {
+            "historia": "oferecer_historia",
+            "saudacao": "oferecer_conversa"
+        }
+    }
+
+
+# ─────────────────────────────────────────
 # NARRATIVA
 # ─────────────────────────────────────────
 
@@ -60,9 +118,13 @@ def escolher_historia(memory):
 
 def historia(ctx):
     if ctx.memory.mode != "story":
+        # limpa qualquer escolha pendente de outros domínios
+        ctx.memory.pending_choice = None
+
         ctx.memory.mode = "story"
         ctx.memory.current_story = escolher_historia(ctx.memory)
         ctx.memory.story_step = 0
+
 
     step = ctx.memory.story_step
     ctx.state.emocao = "feliz"
@@ -90,6 +152,9 @@ def historia(ctx):
     elif step == 3:
         ctx.response_type = "fim"
 
+        ctx.memory.mode = None
+        ctx.memory.story_step = 0
+
         # 🔑 criar escolha SIM / NÃO
         ctx.memory.pending_choice = {
             "domain": "historia",
@@ -105,10 +170,41 @@ def historia(ctx):
     ctx.memory.story_step += 1
 
 
+# ─────────────────────────────────────────
+# IDENTIDADE
+# ─────────────────────────────────────────
+
+def identidade(ctx):
+    ctx.state.emocao = "neutro"
+
+    # primeira vez: apresenta-se e faz pergunta SIM/NÃO
+    if ctx.memory.last_intent != "identidade":
+        ctx.response_type = "normal"
+
+        ctx.memory.pending_choice = {
+            "domain": "identidade",
+            "options": {
+                "sim": "oferecer_ajuda",
+                "nao": "curta"
+            }
+        }
+
+    # repetição
+    else:
+        ctx.response_type = "curta"
+        ctx.memory.pending_choice = None
+
 
 # ─────────────────────────────────────────
 # OUTROS HANDLERS
 # ─────────────────────────────────────────
+
+def despedida(ctx):
+    ctx.state.emocao = "neutro"
+    ctx.memory.mode = None
+    ctx.memory.pending_choice = None
+    ctx.response_type = "despedida"
+    
 
 def continuar(ctx):
     if ctx.memory.mode == "story":
@@ -125,36 +221,3 @@ def parar(ctx):
     else:
         ctx.response_type = "nada_para"
 
-
-def identidade(ctx):
-    if ctx.memory.last_intent == "identidade":
-        ctx.state.emocao = "cansado"
-        ctx.response_type = "curta"
-    else:
-        ctx.state.emocao = "neutro"
-        ctx.response_type = "normal"
-
-
-def saudacao(ctx):
-    ctx.state.emocao = "feliz"
-    ctx.response_type = "curta"
-
-
-def ajuda(ctx):
-    ctx.response_type = "explicacao"
-
-
-def confirmacao(ctx):
-    if ctx.memory.mode == "story":
-        ctx.intent_executed = "historia"
-        historia(ctx)
-    else:
-        ctx.response_type = "confirmado"
-
-
-def negacao(ctx):
-    if ctx.memory.mode == "story":
-        ctx.memory.mode = None
-        ctx.response_type = "recusou"
-    else:
-        ctx.response_type = "negou"
