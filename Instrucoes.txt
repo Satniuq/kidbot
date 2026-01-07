@@ -13,3 +13,5 @@ GitHub
 git add .
 git commit -m "intruçoes atualizadas"
 git push
+
+Ativar testes fazer - pytest
