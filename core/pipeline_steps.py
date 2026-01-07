@@ -8,6 +8,7 @@ from decision.policy import aplicar_politica
 from response.picker import escolher_resposta
 from state.state import State
 from state.memory import Memory
+from response.formatter import formatar_resposta
 
 
 def normalizar_texto(ctx):
@@ -57,12 +58,20 @@ def politica(ctx):
 
 
 def resposta(ctx):
-    ctx.response_text = escolher_resposta(
+    # sincroniza emoção momentânea → persistente
+    if hasattr(ctx.state, "emocao"):
+        ctx.memory.set_emocao(ctx.state.emocao)
+
+    texto_base = escolher_resposta(
         ctx.intent_executed,
         ctx.response_type,
         ctx.memory
     )
+
+    ctx.response_text = formatar_resposta(ctx, texto_base)
+
     ctx.memory.register_intent(ctx.intent_executed)
+
 
 
 

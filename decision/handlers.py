@@ -1,9 +1,9 @@
-#handlers.py
+# handlers.py
 
 import random
 
 # ─────────────────────────────────────────
-# FALLBACK
+# FALLBACK (META implícito)
 # ─────────────────────────────────────────
 
 def fallback(ctx):
@@ -12,7 +12,7 @@ def fallback(ctx):
 
 
 # ─────────────────────────────────────────
-# MOTOR GENÉRICO DE ESCOLHAS
+# MOTOR GENÉRICO DE ESCOLHAS (STORY)
 # ─────────────────────────────────────────
 
 def escolha(ctx):
@@ -29,20 +29,21 @@ def escolha(ctx):
     # fecha a escolha
     ctx.memory.pending_choice = None
 
-    # ⚠️ GARANTE que o picker vai procurar em RESPONSES["historia"]
-    ctx.intent_executed = choice["domain"]   # aqui SIM, e conscientemente
+    # domínio alvo (ex: "historia")
+    ctx.intent_executed = choice["domain"]
 
-    # define a resposta concreta (ex: dragao_voar)
+    # resposta concreta (ex: dragao_voar)
     ctx.response_type = choice["options"][intent]
 
-    # só avança narrativa se fizer sentido
+    # avança narrativa se aplicável
     if "next_step" in choice:
         ctx.memory.story_step = choice["next_step"]
 
 
 # ─────────────────────────────────────────
-# WRAPPERS DE OPÇÕES (SEM LÓGICA)
+# WRAPPERS DE OPÇÕES (STORY)
 # ─────────────────────────────────────────
+
 def sim(ctx):
     if ctx.memory.pending_choice:
         escolha(ctx)
@@ -57,21 +58,19 @@ def nao(ctx):
 def voar(ctx):
     escolha(ctx)
 
+
 def esperar(ctx):
     escolha(ctx)
 
 
 # ─────────────────────────────────────────
-# SAUDAÇÃO
+# SOCIAL
 # ─────────────────────────────────────────
 
 def saudacao(ctx):
     ctx.state.emocao = "feliz"
-
-    # resposta inicial
     ctx.response_type = "oferta"
 
-    # cria mini-ciclo de diálogo
     ctx.memory.pending_choice = {
         "domain": "saudacao",
         "options": {
@@ -81,15 +80,22 @@ def saudacao(ctx):
     }
 
 
+def despedida(ctx):
+    ctx.state.emocao = "neutro"
+    ctx.memory.mode = None
+    ctx.memory.pending_choice = None
+    ctx.response_type = "despedida"
+
+
 # ─────────────────────────────────────────
-# AJUDA
+# META
 # ─────────────────────────────────────────
+
 def ajuda(ctx):
-    # interrompe qualquer narrativa activa
-    if ctx.memory.mode == "story":
-        ctx.memory.mode = None
-        ctx.memory.story_step = 0
-        ctx.memory.pending_choice = None
+    # META pode sempre interromper
+    ctx.memory.mode = None
+    ctx.memory.story_step = 0
+    ctx.memory.pending_choice = None
 
     ctx.state.emocao = "neutro"
     ctx.response_type = "explicacao"
@@ -103,8 +109,31 @@ def ajuda(ctx):
     }
 
 
+def identidade(ctx):
+    ctx.state.emocao = "neutro"
+
+    if ctx.memory.last_intent != "identidade":
+        ctx.response_type = "normal"
+        ctx.memory.pending_choice = {
+            "domain": "identidade",
+            "options": {
+                "sim": "oferecer_ajuda",
+                "nao": "curta"
+            }
+        }
+    else:
+        ctx.response_type = "curta"
+        ctx.memory.pending_choice = None
+
+
+def parar(ctx):
+    # META: parar narrativa se existir
+    ctx.memory.mode = None
+    ctx.response_type = "parou"
+
+
 # ─────────────────────────────────────────
-# NARRATIVA
+# STORY
 # ─────────────────────────────────────────
 
 def escolher_historia(memory):
@@ -118,13 +147,10 @@ def escolher_historia(memory):
 
 def historia(ctx):
     if ctx.memory.mode != "story":
-        # limpa qualquer escolha pendente de outros domínios
         ctx.memory.pending_choice = None
-
         ctx.memory.mode = "story"
         ctx.memory.current_story = escolher_historia(ctx.memory)
         ctx.memory.story_step = 0
-
 
     step = ctx.memory.story_step
     ctx.state.emocao = "feliz"
@@ -135,7 +161,6 @@ def historia(ctx):
     elif step == 1:
         ctx.response_type = "meio"
 
-        # 🔑 CRIA ESCOLHA APENAS COM DADOS
         if ctx.memory.current_story == "dragao" and ctx.memory.pending_choice is None:
             ctx.memory.pending_choice = {
                 "domain": "historia",
@@ -151,11 +176,9 @@ def historia(ctx):
 
     elif step == 3:
         ctx.response_type = "fim"
-
         ctx.memory.mode = None
         ctx.memory.story_step = 0
 
-        # 🔑 criar escolha SIM / NÃO
         ctx.memory.pending_choice = {
             "domain": "historia",
             "next_step": 0,
@@ -164,60 +187,15 @@ def historia(ctx):
                 "nao": "fim_definitivo"
             }
         }
-
         return
 
     ctx.memory.story_step += 1
 
-
-# ─────────────────────────────────────────
-# IDENTIDADE
-# ─────────────────────────────────────────
-
-def identidade(ctx):
-    ctx.state.emocao = "neutro"
-
-    # primeira vez: apresenta-se e faz pergunta SIM/NÃO
-    if ctx.memory.last_intent != "identidade":
-        ctx.response_type = "normal"
-
-        ctx.memory.pending_choice = {
-            "domain": "identidade",
-            "options": {
-                "sim": "oferecer_ajuda",
-                "nao": "curta"
-            }
-        }
-
-    # repetição
-    else:
-        ctx.response_type = "curta"
-        ctx.memory.pending_choice = None
-
-
-# ─────────────────────────────────────────
-# OUTROS HANDLERS
-# ─────────────────────────────────────────
-
-def despedida(ctx):
-    ctx.state.emocao = "neutro"
-    ctx.memory.mode = None
-    ctx.memory.pending_choice = None
-    ctx.response_type = "despedida"
-    
-
 def continuar(ctx):
-    if ctx.memory.mode == "story":
-        ctx.intent_executed = "historia"
-        historia(ctx)
-    else:
-        ctx.response_type = "confuso"
-
-
-def parar(ctx):
-    if ctx.memory.mode == "story":
-        ctx.memory.mode = None
-        ctx.response_type = "parou"
-    else:
-        ctx.response_type = "nada_para"
+    """
+    STORY: continuar narrativa existente.
+    A lógica pesada é delegada ao handler 'historia'.
+    """
+    ctx.intent_executed = "historia"
+    historia(ctx)
 

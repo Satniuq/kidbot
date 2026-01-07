@@ -5,7 +5,7 @@ Ativar ambiente virtual - venv
 source .venv/bin/activate
 
 Testar:
-    python -m tests.test_brain
+    python -m playground.test_brain
 
 
 GitHub
